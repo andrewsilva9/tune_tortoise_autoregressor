@@ -1,0 +1,20 @@
+audio/LK Annoyed 4.wav| insects.
+audio/LK Annoyed1.wav| Hahahaha
+audio/LK Annoyed2.wav| Your soul will languish in damnation for all eternity.
+audio/LK Annoyed3.wav| Observe as I apply pressure.
+audio/LK Attack 1.wav| I suppose a welcome is in order.
+audio/LK Attack 2.wav| Hm, hm, hm.
+audio/LK Attack 5.wav| This one is not ready.
+audio/LK Attack 6.wav| With just a snap of my finger.
+audio/LK Attack3.wav| You will be mine.
+audio/LK Attack4.wav| No mercy.
+audio/LK Warcry.wav| Let none survive.
+audio/LK What1.wav| Allow me to help.
+audio/LK What2.wav| I give you the choice.
+audio/LK What4.wav| Death seeps through me.
+audio/LK Yes1.wav| I have other plans.
+audio/LK Yes2.wav| Very well.
+audio/LK Yes3.wav| I am pleased.
+audio/LK Yes4.wav| Yes.
+audio/LK Yes5.wav| It matters not.
+audio/LKWhat 3.wav| Free will has a price.

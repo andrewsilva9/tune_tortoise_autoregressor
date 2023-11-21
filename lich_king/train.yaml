@@ -1,0 +1,141 @@
+name: 'lich_king'
+model: extensibletrainer
+scale: 1
+gpu_ids: [0] # Manually edit this if the GPU you want to train on is not your primary, as this will set the env var that exposes CUDA devices
+start_step: 0
+checkpointing_enabled: true 
+fp16: False
+bitsandbytes: False
+gpus: 1
+
+datasets:
+  train:
+    name: training
+    n_workers: 0
+    batch_size: 4
+    mode: paired_voice_audio
+    path: ../lich_king/train.txt
+    fetcher_mode: ['lj']
+    phase: train
+    max_wav_length: 255995 # ~11.6 seconds
+    max_text_length: 200
+    sample_rate: 22050
+    load_conditioning: True
+    num_conditioning_candidates: 2
+    conditioning_length: 44000
+    use_bpe_tokenizer: True
+    tokenizer_vocab: ../base_models/tokenizer.json # ./models/tortoise/bpe_lowercase_asr_256.json
+    load_aligned_codes: False
+  val:
+    name: validation
+    n_workers: 0
+    batch_size: 2
+    mode: paired_voice_audio
+    path: ../lich_king/validation.txt
+    fetcher_mode: ['lj']
+    phase: val
+    max_wav_length: 255995
+    max_text_length: 200
+    sample_rate: 22050
+    load_conditioning: True
+    num_conditioning_candidates: 2
+    conditioning_length: 44000
+    use_bpe_tokenizer: True
+    tokenizer_vocab: ../base_models/tokenizer.json # modules/tortoise-tts/tortoise/data
+    load_aligned_codes: False
+
+steps:        
+  gpt_train:
+    training: gpt
+    loss_log_buffer: 500
+
+    # Generally follows the recipe from the DALLE paper.
+    optimizer: adamw # this should be adamw_zero if you're using distributed training
+    optimizer_params:
+      lr: !!float 1e-05 # originally: 1e-4
+      weight_decay: !!float 1e-2
+      beta1: 0.9
+      beta2: 0.96
+    clip_grad_eps: 4
+
+    injectors:
+      paired_to_mel:
+        type: torch_mel_spectrogram
+        mel_norm_file: ../base_models/mel_norms.pth
+        in: wav
+        out: paired_mel
+      paired_cond_to_mel:
+        type: for_each
+        subtype: torch_mel_spectrogram
+        mel_norm_file: ../base_models/mel_norms.pth
+        in: conditioning
+        out: paired_conditioning_mel
+      to_codes:
+        type: discrete_token
+        in: paired_mel
+        out: paired_mel_codes
+        dvae_config: "../base_models/train_diffusion_vocoder_22k_level.yml"
+      paired_fwd_text:
+        type: generator
+        generator: gpt
+        in: [paired_conditioning_mel, padded_text, text_lengths, paired_mel_codes, wav_lengths]
+        out: [loss_text_ce, loss_mel_ce, logits]      
+    losses:
+      text_ce:
+        type: direct
+        weight: 0.01
+        key: loss_text_ce
+      mel_ce:
+        type: direct
+        weight: 1
+        key: loss_mel_ce
+
+networks:
+  gpt:
+    type: generator
+    which_model_G: unified_voice2
+    kwargs:
+      layers: 30 # originally: 8
+      model_dim: 1024 # originally: 512
+      heads: 16 # originally: 8
+      max_text_tokens: 402 # originally: 120
+      max_mel_tokens: 604 # originally: 250
+      max_conditioning_inputs: 2 # originally: 1
+      mel_length_compression: 1024
+      number_text_tokens: 256 # supposed to be 255 for newer unified_voice files 
+      number_mel_codes: 8194
+      start_mel_token: 8192
+      stop_mel_token: 8193
+      start_text_token: 255
+      train_solo_embeddings: False # missing in uv3/4
+      use_mel_codes_as_input: True # ditto
+      checkpointing: True
+      tortoise_compat: True
+      # freeze_everything_but_position_embeddings: True
+
+path:
+  strict_load: true
+  pretrain_model_gpt: '../base_models/autoregressive.pth'
+  # resume_state: ''
+
+train:
+  niter: 250
+  warmup_iter: -1
+  mega_batch_factor: 2
+  val_freq: 50
+
+  ema_enabled: false # I really don't think EMA matters
+
+  default_lr_scheme: MultiStepLR
+  gen_lr_steps: [10, 20, 45, 90, 125, 165, 250]
+  lr_gamma: 0.5
+
+eval:
+  pure: True
+  output_state: gen
+
+logger: 
+  save_checkpoint_freq: 50
+  visuals: [gen, mel]
+  visual_debug_rate: 50
+  is_mel_spectrogram: true

@@ -1,2 +1,47 @@
 # tune_tortoise_autoregressor
-Fine tuning the UnifiedVoice autoregressor for TortoiseTTS.
+
+The goal of this repository is to provide a fairly self-contained set of scripts for fine-tuning the TorToiSe text-to-speech system.
+
+
+The original TTS Author (James Betker) has produced a nice write-up of how the system works here: https://arxiv.org/pdf/2305.07243.pdf
+
+### Where is this code from?
+Much of this code is copied from or trimmed out of DLAS: https://github.com/neonbjb/DL-Art-School -- I've tried to basically just extract the necessary components.
+
+I also used a lot of this demo app: https://git.ecker.tech/mrq/ai-voice-cloning to pull out necessary training pieces. 
+While the linked app does everything I have reproduced here (and more), I wanted the code to be accessible outside of a gradio web-app.
+
+### Requirements
+
+This requires Python 3.10 and requirements in the requirements.txt file.
+
+
+### Fine-Tuning:
+I've included some sample files in the `lich_king` directory to get you started. You'll need :
+
+* a training YAML (see `lich_king/train.yaml` for an example) that links to your training and validation data.
+* a `.txt` of training data, with paths to audio files and transcriptions (see `lich_king/train.txt`)
+* a directory of audio files (preferably `.wav`) (see `lich_king/audio/*.wav`)
+* (Optionally) a `.txt` of validation data and validation audio files, though these aren't super necessary or useful.
+
+With that, navigate to the `src` directory and run
+```bash
+python train.py --yaml ../lich_king/train.yaml
+```
+And you'll see the model begin to train. Note that you can point `--yaml` to a different training yaml for a different fine tuned model.
+
+Models will be saved into the `../training/{voice_name}/finetune/models/` directory.
+
+### Generation with a fine-tuned model:
+I've put a demo for generation inside `custom_tts.py`.
+
+For that, run:
+
+```bash
+python custom_tts.py --model ../training/lich_king/finetune/models/255_gpt.pth
+```
+The model will generate the conditioning latents for the voices you've provided. The text and voices are currently hard coded (to be fixed soon!).
+
+`--model` points to the model you want to load in.
+
+The 4 versions of the speech will be saved as `test_k.wav` in the `src` directory. 
