@@ -15,6 +15,10 @@ While the linked app does everything I have reproduced here (and more), I wanted
 
 This requires Python 3.10 and requirements in the requirements.txt file.
 
+You also need the base models (from which to fine-tune), which are available in this google drive folder:
+https://drive.google.com/drive/folders/1o1BQ6wlRonQu0FAi8SdQZMaNeDqxVm5I?usp=sharing
+
+Download them to the `base_models` directory.
 
 ### Fine-Tuning:
 I've included some sample files in the `lich_king` directory to get you started. You'll need :
