@@ -1,14 +1,16 @@
 # tune_tortoise_autoregressor
 
 The goal of this repository is to provide a fairly self-contained set of scripts for fine-tuning the TorToiSe text-to-speech system.
+There is an existing web-app that you can use if you just want easy/accessible fine-tuning and inference: https://git.ecker.tech/mrq/ai-voice-cloning -- the purpose of this repo is to provide a self-contained fine-tuning setup for developers.
 
 
-The original TTS Author (James Betker) has produced a nice write-up of how the system works here: https://arxiv.org/pdf/2305.07243.pdf
+The original TorToiSe TTS Author (James Betker) has produced a nice write-up of how the system works here: https://arxiv.org/pdf/2305.07243.pdf
 
 ### Where is this code from?
 Much of this code is copied from or trimmed out of DLAS: https://github.com/neonbjb/DL-Art-School -- I've tried to basically just extract the necessary components.
 
-I also used a lot of this demo app: https://git.ecker.tech/mrq/ai-voice-cloning to pull out necessary training pieces. 
+I also used a lot of this demo app: https://git.ecker.tech/mrq/ai-voice-cloning to pull out necessary training pieces.
+No actual code was copied from the gradio app, but it was immensely useful in recreating the training process with DLAS and seeing which relevant bits I needed to extract.
 While the linked app does everything I have reproduced here (and more), I wanted the code to be accessible outside of a gradio web-app.
 
 ### Requirements

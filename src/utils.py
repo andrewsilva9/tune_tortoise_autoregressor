@@ -1,6 +1,6 @@
 """
 Created by Andrew Silva on 11/13/23
-Copied from https://git.ecker.tech/mrq/ai-voice-cloning and https://github.com/neonbjb/DL-Art-School
+Copied from https://github.com/neonbjb/DL-Art-School with thanks to https://git.ecker.tech/mrq/ai-voice-cloning
 
 """
 
